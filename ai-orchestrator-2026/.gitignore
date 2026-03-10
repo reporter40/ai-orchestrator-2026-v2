@@ -1,0 +1,22 @@
+# ChromaDB persistent storage
+chroma_db/
+
+# DSPy compiled programs
+dspy_compiled/
+
+# SQLite database
+*.db
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/

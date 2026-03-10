@@ -1,0 +1,7 @@
+{
+  "music_theory": "Fibonacci sequence in music: intervals 1,1,2,3,5,8,13,21 relate to harmonic ratios. Golden ratio phi=1.618 appears in chord progressions and rhythmic patterns. Pentatonic scales follow natural harmonic series. Bach's fugues demonstrate mathematical symmetry in counterpoint.",
+  "psychology": "Psychological profiles of electronic music listeners: high openness to experience, prefer complexity and novelty, respond to emotional intensity and texture. Cognitive load theory suggests structured prompts reduce mental effort. Framing effects influence perception of AI-generated content.",
+  "prompt_engineering": "Best practices: clear role definition, explicit output format, few-shot examples, chain-of-thought reasoning, temperature calibration per task. System prompts should establish persona, constraints, and expected behavior. Use delimiters for multi-section prompts. Iterative refinement improves output quality by 30-50%.",
+  "creative_writing": "Effective creative prompts leverage sensory details, emotional anchors, and narrative tension. Metaphor density should match audience sophistication. Story arcs follow: setup, confrontation, resolution. Voice consistency requires explicit style guides.",
+  "technical_docs": "Technical documentation prompts benefit from structured templates, explicit terminology constraints, and audience-level calibration. API docs should include: description, parameters, return values, examples, error codes."
+}

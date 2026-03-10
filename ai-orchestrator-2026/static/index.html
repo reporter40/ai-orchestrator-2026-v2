@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Orchestrator 2026 — Мультиагентная оркестрация промптов</title>
+    <meta name="description" content="Мультиагентная система оркестрации LLM-промптов с ChromaDB и DSPy">
+    <link rel="stylesheet" href="/static/index.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- ═══════════════ HEADER ═══════════════ -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="header-logo">🤖</div>
+                <div>
+                    <div class="header-title">AI Orchestrator 2026</div>
+                    <div class="header-subtitle">Supervisor → Agentic MoE → Stateful Graph</div>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-badge" id="chromaStatus">
+                    <span class="status-dot"></span>
+                    <span>ChromaDB</span>
+                </div>
+                <div class="status-badge" id="llmStatus">
+                    <span class="status-dot"></span>
+                    <span>LLM Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════ MAIN GRID ═══════════════ -->
+        <div class="main-grid">
+
+            <!-- ─── INPUT SECTION ─── -->
+            <section class="input-section card">
+                <div class="card-body">
+                    <div class="prompt-form">
+                        <div class="prompt-input-wrap">
+                            <textarea id="promptInput" class="prompt-input"
+                                placeholder="Введите запрос для генерации промпта... Например: «Создай промпт для написания маркетинговой стратегии»"
+                                rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="prompt-options">
+                        <div class="option-item">
+                            <label>Режим:</label>
+                            <select id="runMode" class="config-input" onchange="toggleExternalUrl()">
+                                <option value="auto">Авто (MoE Pool)</option>
+                                <option value="external">Внешний агент</option>
+                            </select>
+                        </div>
+                        <div id="externalUrlWrap" class="option-item" style="display:none; flex:1">
+                            <label>URL внешнего агента:</label>
+                            <input type="text" id="externalUrl" class="config-input" style="width:100%"
+                                placeholder="https://api.example.com/generate">
+                        </div>
+                    </div>
+                    <div class="prompt-controls">
+                        <button id="runBtn" class="btn btn-primary" onclick="startOrchestration()">
+                            🚀 Запуск
+                        </button>
+                        <button id="stopBtn" class="btn btn-secondary btn-sm" onclick="stopOrchestration()"
+                            style="display:none">
+                            ⬛ Стоп
+                        </button>
+                    </div>
+                    <div class="config-row">
+                        <div class="config-item">
+                            <label>Итераций:</label>
+                            <input type="number" id="cfgIterations" class="config-input" value="3" min="1" max="5">
+                        </div>
+                        <div class="config-item">
+                            <label>Порог:</label>
+                            <input type="number" id="cfgThreshold" class="config-input" value="0.85" min="0" max="1"
+                                step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <div class="status-badge" id="modeIndicator">
+                                <span class="status-dot"></span>
+                                <span id="modeText">REAL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── PIPELINE VISUALIZER ─── -->
+            <section class="pipeline-section card">
+                <div class="card-header">
+                    <div class="card-title"><span class="icon">⚡</span> Пайплайн</div>
+                    <div id="iterationBadge" class="status-badge" style="display:none">
+                        Итерация <span id="iterNum">1</span>/<span id="iterMax">3</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="pipeline-steps">
+                        <div class="pipeline-step" id="step-router">
+                            <div class="step-icon">📡</div>
+                            <div class="step-label">Router</div>
+                            <div class="step-detail" id="step-router-detail"></div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step" id="step-generator">
+                            <div class="step-icon">🎨</div>
+                            <div class="step-label">Generator</div>
+                            <div class="step-detail" id="step-generator-detail"></div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step" id="step-evaluator">
+                            <div class="step-icon">⚖️</div>
+                            <div class="step-label">Evaluator</div>
+                            <div class="step-detail" id="step-evaluator-detail"></div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step" id="step-optimizer">
+                            <div class="step-icon">🔧</div>
+                            <div class="step-label">Optimizer</div>
+                            <div class="step-detail" id="step-optimizer-detail"></div>
+                        </div>
+                        <div class="pipeline-arrow">→</div>
+                        <div class="pipeline-step" id="step-red_team">
+                            <div class="step-icon">🔴</div>
+                            <div class="step-label">Red Team</div>
+                            <div class="step-detail" id="step-red_team-detail"></div>
+                        </div>
+                    </div>
+                    <div class="progress-message" id="progressMsg"></div>
+                </div>
+            </section>
+
+            <!-- ─── RESULTS ─── -->
+            <section class="results-section card" id="resultsSection">
+                <div class="card-header">
+                    <div class="card-title"><span class="icon">📝</span> Результат</div>
+                    <div id="resultScore" class="status-badge" style="display:none">
+                        Score: <span id="scoreVal">—</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="resultsEmpty" class="empty-state">
+                        <div class="empty-icon">✨</div>
+                        <div class="empty-text">Введите запрос и нажмите «Запуск» для генерации промпта</div>
+                    </div>
+                    <div id="resultsContent" style="display:none" class="fade-in">
+                        <div class="scores-grid" id="scoresGrid">
+                            <div class="score-card">
+                                <div class="score-value" id="scoreFinal">—</div>
+                                <div class="eval-bar">
+                                    <div class="eval-fill" id="barFinal" style="width:0"></div>
+                                </div>
+                                <div class="score-label">Итоговый</div>
+                            </div>
+                            <div class="score-card">
+                                <div class="score-value" id="scoreFulfill">—</div>
+                                <div class="eval-bar">
+                                    <div class="eval-fill" id="barFulfill" style="width:0"></div>
+                                </div>
+                                <div class="score-label">Выполнение</div>
+                            </div>
+                            <div class="score-card">
+                                <div class="score-value" id="scoreRAG">—</div>
+                                <div class="eval-bar">
+                                    <div class="eval-fill" id="barRAG" style="width:0"></div>
+                                </div>
+                                <div class="score-label">RAG точность</div>
+                            </div>
+                            <div class="score-card">
+                                <div class="score-value" id="scoreRobust">—</div>
+                                <div class="eval-bar">
+                                    <div class="eval-fill" id="barRobust" style="width:0"></div>
+                                </div>
+                                <div class="score-label">Устойчивость</div>
+                            </div>
+                        </div>
+                        <div class="result-wrap">
+                            <button class="copy-btn" onclick="copyPrompt()">📋 Копировать</button>
+                            <div class="result-prompt" id="resultPrompt"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SIDEBAR ─── -->
+            <aside class="sidebar">
+                <!-- Tab Navigation -->
+                <div class="card" style="flex:1">
+                    <div class="card-header" style="padding-bottom:0; border-bottom:none;">
+                        <div class="tab-nav" style="width:100%">
+                            <button class="tab-btn active" onclick="switchTab('agents')">🔗 Агенты</button>
+                            <button class="tab-btn" onclick="switchTab('kb')">📚 KB</button>
+                            <button class="tab-btn" onclick="switchTab('history')">📜 История</button>
+                            <button class="tab-btn" onclick="switchTab('stats')">📊 Stats</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- TAB: Agent Registry (V2) -->
+                        <div class="tab-content active" id="tab-agents">
+                            <div class="agent-registry-header">
+                                <button class="btn btn-secondary btn-sm" onclick="showAddAgentModal()">+ Добавить
+                                    агента</button>
+                                <button class="btn btn-secondary btn-sm" onclick="loadAgents()">🔄 Обновить</button>
+                            </div>
+                            <div class="agent-grid" id="agentGrid">
+                                <!-- Dynamic agents from registry -->
+                                <div class="empty-state">
+                                    <div class="spinner"></div>
+                                    <div class="empty-text">Загрузка реестра агентов...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Knowledge Base -->
+                        <div class="tab-content" id="tab-kb">
+                            <div class="kb-list" id="kbList">
+                                <div class="empty-state">
+                                    <div class="spinner"></div>
+                                    <div class="empty-text" style="margin-top:12px">Загрузка базы знаний...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: History -->
+                        <div class="tab-content" id="tab-history">
+                            <div class="history-list" id="historyList">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📜</div>
+                                    <div class="empty-text">История сессий пуста</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: ChromaDB Stats -->
+                        <div class="tab-content" id="tab-stats">
+                            <div class="stats-grid" id="statsGrid">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statKB">—</div>
+                                    <div class="stat-label">Knowledge Base</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statPrompts">—</div>
+                                    <div class="stat-label">Prompt Versions</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statSessions">—</div>
+                                    <div class="stat-label">Сессий</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statMode">—</div>
+                                    <div class="stat-label">Режим</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ─── LOGS ─── -->
+            <section class="logs-panel card">
+                <div class="card-header">
+                    <div class="card-title"><span class="icon">📋</span> Лог оркестрации</div>
+                    <button class="btn btn-secondary btn-sm" onclick="clearLogs()">Очистить</button>
+                </div>
+                <div class="card-body" style="padding:8px 20px">
+                    <div class="log-entries" id="logEntries">
+                        <div class="log-entry">
+                            <span class="log-time">[init]</span>
+                            <span>Система готова к работе</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- Modal: Add Agent -->
+    <div id="addAgentModal" class="modal">
+        <div class="modal-content card slide-up">
+            <div class="card-header">
+                <div class="card-title">Добавить нового агента</div>
+                <button class="close-btn" onclick="hideAddAgentModal()">×</button>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Имя агента (ID):</label>
+                    <input type="text" id="newAgentName" class="prompt-input" placeholder="например: python_expert"
+                        style="min-height:unset">
+                </div>
+                <div class="form-group">
+                    <label>Роль:</label>
+                    <input type="text" id="newAgentRole" class="prompt-input" placeholder="например: Senior Python Dev"
+                        style="min-height:unset">
+                </div>
+                <div class="form-group">
+                    <label>Системная инструкция:</label>
+                    <textarea id="newAgentInstruction" class="prompt-input" rows="4"
+                        placeholder="Вы — эксперт по..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Типы задач (через запятую):</label>
+                    <input type="text" id="newAgentTasks" class="prompt-input" placeholder="code, architecture"
+                        style="min-height:unset">
+                </div>
+                <div class="prompt-controls" style="margin-top:16px">
+                    <button class="btn btn-primary" onclick="submitNewAgent()">Сохранить агента</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

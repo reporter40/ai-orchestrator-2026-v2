@@ -1,0 +1,102 @@
+01:56:41 | INFO     | dspy_optimizer       | ✅ DSPy доступен — MIPROv2 будет использоваться для оптимизации.
+INFO:     127.0.0.1:56742 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56742 - "GET /static/index.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:56745 - "GET /static/app.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:56745 - "GET /api/settings HTTP/1.1" 200 OK
+01:56:53 | INFO     | observability        | ✅ TelemetrySystem: OpenTelemetry инициализирован
+01:56:53 | INFO     | llm_router           | ✅ LLM Router инициализирован. Модели: cheap=gpt-4o-mini, medium=gpt-4o-mini, creative=gpt-4o
+01:56:53 | INFO     | mcp_servers          | 📚 KB загружена из /Users/Orlova/ai-orchestrator-2026/knowledge_base.json (5 записей)
+01:56:53 | INFO     | mcp_servers          | ⏳ Инициализация ChromaDB (embedding: all-MiniLM-L6-v2 via SentenceTransformer)... При первом запуске модель (~90MB) будет скачана.
+01:57:07 | WARNING  | mcp_servers          | ⚠️  SentenceTransformer init error: name 'nn' is not defined — используем default embeddings
+01:57:07 | INFO     | mcp_servers          | ✅ [MCP] ChromaDB mode — коллекции: knowledge_base (5 docs), prompt_versions (1 docs)
+01:57:07 | INFO     | mcp_servers          | 📚 KB уже заполнена (5 docs) — seed пропущен
+01:57:07 | INFO     | dspy_optimizer       | ✅ DSPy сконфигурирован: model=openai/gpt-4o-mini
+01:57:07 | WARNING  | opentelemetry.trace  | Overriding of current TracerProvider is not allowed
+01:57:07 | INFO     | observability        | ✅ TelemetrySystem: OpenTelemetry инициализирован
+01:57:07 | INFO     | llm_router           | ✅ LLM Router инициализирован. Модели: cheap=gpt-4o-mini, medium=gpt-4o-mini, creative=gpt-4o
+01:57:07 | INFO     | mcp_servers          | 📚 KB загружена из /Users/Orlova/ai-orchestrator-2026/knowledge_base.json (5 записей)
+01:57:07 | INFO     | mcp_servers          | ⏳ Инициализация ChromaDB (embedding: all-MiniLM-L6-v2 via SentenceTransformer)... При первом запуске модель (~90MB) будет скачана.
+01:57:07 | WARNING  | mcp_servers          | ⚠️  SentenceTransformer init error: name 'nn' is not defined — используем default embeddings
+01:57:08 | INFO     | mcp_servers          | ✅ [MCP] ChromaDB mode — коллекции: knowledge_base (5 docs), prompt_versions (1 docs)
+01:57:08 | INFO     | mcp_servers          | 📚 KB уже заполнена (5 docs) — seed пропущен
+01:57:08 | WARNING  | dspy_optimizer       | ⚠️  Ошибка конфигурации DSPy: dspy.configure(...) can only be called from the same async task that called it first. Please use `dspy.context(...)` in other async tasks instead. — используем LLM fallback
+01:57:08 | WARNING  | opentelemetry.trace  | Overriding of current TracerProvider is not allowed
+01:57:08 | INFO     | observability        | ✅ TelemetrySystem: OpenTelemetry инициализирован
+01:57:08 | INFO     | llm_router           | ✅ LLM Router инициализирован. Модели: cheap=gpt-4o-mini, medium=gpt-4o-mini, creative=gpt-4o
+01:57:08 | INFO     | mcp_servers          | 📚 KB загружена из /Users/Orlova/ai-orchestrator-2026/knowledge_base.json (5 записей)
+01:57:08 | INFO     | mcp_servers          | ⏳ Инициализация ChromaDB (embedding: all-MiniLM-L6-v2 via SentenceTransformer)... При первом запуске модель (~90MB) будет скачана.
+01:57:08 | WARNING  | mcp_servers          | ⚠️  SentenceTransformer init error: name 'nn' is not defined — используем default embeddings
+01:57:08 | INFO     | mcp_servers          | ✅ [MCP] ChromaDB mode — коллекции: knowledge_base (5 docs), prompt_versions (1 docs)
+01:57:08 | INFO     | mcp_servers          | 📚 KB уже заполнена (5 docs) — seed пропущен
+01:57:08 | WARNING  | dspy_optimizer       | ⚠️  Ошибка конфигурации DSPy: dspy.configure(...) can only be called from the same async task that called it first. Please use `dspy.context(...)` in other async tasks instead. — используем LLM fallback
+01:57:08 | INFO     | db_versioning        | ✅ DB инициализирована: orchestrator.db
+01:57:08 | INFO     | __main__             | ✅ All components initialized
+01:57:08 | INFO     | db_versioning        | ✅ DB инициализирована: orchestrator.db
+01:57:08 | INFO     | __main__             | ✅ All components initialized
+INFO:     127.0.0.1:56742 - "GET /api/kb HTTP/1.1" 200 OK
+01:57:12 | INFO     | db_versioning        | ✅ DB инициализирована: orchestrator.db
+01:57:12 | INFO     | __main__             | ✅ All components initialized
+INFO:     127.0.0.1:56750 - "GET /api/chromadb/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56749 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56749 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57019 - "POST /api/orchestrate HTTP/1.1" 200 OK
+01:59:25 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=cheap, latency=3053ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=78, output_tokens=4, raw_input_tokens=78)
+01:59:28 | INFO     | rag_manager          | 📖 RAG контекст для creative_agent: 831 символов (query: 'создай промт для разработки маркетинговой стратеги')
+01:59:40 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o, task_type=creative, latency=11323ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=323, output_tokens=464, raw_input_tokens=323)
+01:59:40 | INFO     | moe_agents           | 🎨 Creative Expert: сгенерирован черновик (1876 символов, model=gpt-4o, 11323ms)
+01:59:45 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=medium, latency=5765ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=410, output_tokens=263, raw_input_tokens=410)
+01:59:45 | INFO     | moe_agents           | 🎨 Structure Expert: сгенерирован черновик (1074 символов, model=gpt-4o-mini, 5766ms)
+INFO:     127.0.0.1:57329 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:57568 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57568 - "GET /static/index.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57569 - "GET /static/app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57568 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57569 - "GET /api/kb HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57577 - "GET /api/chromadb/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57574 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57577 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57606 - "GET /api/chromadb/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57604 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57604 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57604 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57604 - "GET /static/index.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57606 - "GET /static/app.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57606 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57604 - "GET /api/kb HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57606 - "POST /api/orchestrate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57618 - "GET /api/chromadb/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57617 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57617 - "GET /api/history HTTP/1.1" 200 OK
+02:07:38 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=cheap, latency=2670ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=78, output_tokens=4, raw_input_tokens=78)
+02:07:41 | INFO     | rag_manager          | 📖 RAG контекст для creative_agent: 831 символов (query: 'создай промт для разработки маркетинговой стратеги')
+02:07:56 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o, task_type=creative, latency=15283ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=323, output_tokens=718, raw_input_tokens=323)
+02:07:56 | INFO     | moe_agents           | 🎨 Creative Expert: сгенерирован черновик (2814 символов, model=gpt-4o, 15283ms)
+02:08:07 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=medium, latency=11087ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=421, output_tokens=523, raw_input_tokens=421)
+02:08:07 | INFO     | moe_agents           | 🎨 Structure Expert: сгенерирован черновик (2067 символов, model=gpt-4o-mini, 11087ms)
+INFO:     127.0.0.1:57643 - "POST /api/orchestrate HTTP/1.1" 200 OK
+02:08:14 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=cheap, latency=1755ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=78, output_tokens=4, raw_input_tokens=78)
+02:08:16 | INFO     | rag_manager          | 📖 RAG контекст для creative_agent: 831 символов (query: 'создай промт для разработки маркетинговой стратеги')
+02:08:34 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o, task_type=creative, latency=18330ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=323, output_tokens=813, raw_input_tokens=323)
+02:08:34 | INFO     | moe_agents           | 🎨 Creative Expert: сгенерирован черновик (2915 символов, model=gpt-4o, 18332ms)
+02:08:40 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=medium, latency=6172ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=418, output_tokens=304, raw_input_tokens=418)
+02:08:40 | INFO     | moe_agents           | 🎨 Structure Expert: сгенерирован черновик (1197 символов, model=gpt-4o-mini, 6173ms)
+INFO:     127.0.0.1:57765 - "GET /api/chromadb/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57763 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57763 - "GET /api/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57763 - "POST /api/orchestrate HTTP/1.1" 200 OK
+02:10:19 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=cheap, latency=1844ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=78, output_tokens=4, raw_input_tokens=78)
+02:10:30 | INFO     | rag_manager          | 📖 RAG контекст для creative_agent: 831 символов (query: 'создай промт для разработки маркетинговой стратеги')
+02:10:44 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o, task_type=creative, latency=13795ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=323, output_tokens=596, raw_input_tokens=323)
+02:10:44 | INFO     | moe_agents           | 🎨 Creative Expert: сгенерирован черновик (2250 символов, model=gpt-4o, 13800ms)
+02:10:52 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=medium, latency=7836ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=414, output_tokens=355, raw_input_tokens=414)
+02:10:52 | INFO     | moe_agents           | 🎨 Structure Expert: сгенерирован черновик (1434 символов, model=gpt-4o-mini, 7836ms)
+INFO:     127.0.0.1:58161 - "POST /api/orchestrate HTTP/1.1" 200 OK
+02:16:02 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=cheap, latency=1853ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=35, output_tokens=1, raw_input_tokens=35)
+02:16:03 | INFO     | rag_manager          | 📖 RAG контекст для creative_agent: 831 символов (query: 'Test request for parallel MoE')
+02:16:13 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=medium, latency=9228ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=272, output_tokens=569, raw_input_tokens=272)
+02:16:13 | INFO     | moe_agents           | 🎨 Structure Expert: сгенерирован черновик (3142 символов, model=gpt-4o-mini, 9230ms)
+02:16:24 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=medium, latency=11104ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=348, output_tokens=537, raw_input_tokens=348)
+02:16:24 | INFO     | moe_agents           | 🎨 Tone Psychologist: сгенерирован черновик (2146 символов, model=gpt-4o-mini, 11104ms)
+02:16:26 | INFO     | llm_router           | 🤖 LLM вызов: model=gpt-4o-mini, task_type=cheap, latency=1839ms, tokens=Usage(completion_tokens=0, prompt_tokens=0, total_tokens=0, completion_tokens_details=None, prompt_tokens_details=None, input_tokens=574, output_tokens=75, raw_input_tokens=574)
+02:16:26 | INFO     | judges               | ⚖️  Оценка: fulfillment=0.70, rag=0.80, hallucination=0.20, final_score=0.69, approved=False (threshold=0.85)
+02:16:26 | INFO     | db_versioning        | 💾 Версия сохранена: 4a259bdd (сессия=a968c703, итерация=0, score=0.69)
