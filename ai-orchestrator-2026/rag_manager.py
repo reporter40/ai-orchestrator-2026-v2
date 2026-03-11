@@ -53,16 +53,16 @@ class RAGManager:
         preferred_nodes = _AGENT_KB_MAP.get(agent_id, [])
         context_parts: list[str] = []
 
+        # 1. Поиск по предпочтительным узлам (общая база)
         for node_id in preferred_nodes:
             result = await self.mcp.query(node_id=node_id, query_text=query)
             if result and result != "НЕТ_ДАННЫХ":
                 context_parts.append(result)
 
-        # Если ничего не нашли — пробуем по query напрямую
-        if not context_parts and query:
-            fallback = await self.mcp.query(node_id="", query_text=query)
-            if fallback and fallback != "НЕТ_ДАННЫХ":
-                context_parts.append(fallback)
+        # 2. Поиск в изолированной базе конкретного агента
+        agent_specific = await self.mcp.query(node_id="", query_text=query, n_results=5, agent_id=agent_id)
+        if agent_specific and agent_specific != "НЕТ_ДАННЫХ":
+             context_parts.append(f"[Изолированные знания агента]:\n{agent_specific}")
 
         context = "\n\n---\n\n".join(context_parts) if context_parts else ""
 

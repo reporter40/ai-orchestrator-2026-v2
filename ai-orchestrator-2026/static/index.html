@@ -20,7 +20,7 @@
                 <div class="header-logo">🤖</div>
                 <div>
                     <div class="header-title">AI Orchestrator 2026</div>
-                    <div class="header-subtitle">Supervisor → Agentic MoE → Stateful Graph</div>
+                    <div class="header-subtitle">Супервизор → Агентный MoE → Граф состояний</div>
                 </div>
             </div>
             <div class="header-status">
@@ -30,7 +30,7 @@
                 </div>
                 <div class="status-badge" id="llmStatus">
                     <span class="status-dot"></span>
-                    <span>LLM Ready</span>
+                    <span>LLM Готов</span>
                 </div>
             </div>
         </header>
@@ -103,25 +103,25 @@
                     <div class="pipeline-steps">
                         <div class="pipeline-step" id="step-router">
                             <div class="step-icon">📡</div>
-                            <div class="step-label">Router</div>
+                            <div class="step-label">Роутер</div>
                             <div class="step-detail" id="step-router-detail"></div>
                         </div>
                         <div class="pipeline-arrow">→</div>
                         <div class="pipeline-step" id="step-generator">
                             <div class="step-icon">🎨</div>
-                            <div class="step-label">Generator</div>
+                            <div class="step-label">Генератор</div>
                             <div class="step-detail" id="step-generator-detail"></div>
                         </div>
                         <div class="pipeline-arrow">→</div>
                         <div class="pipeline-step" id="step-evaluator">
                             <div class="step-icon">⚖️</div>
-                            <div class="step-label">Evaluator</div>
+                            <div class="step-label">Оценка</div>
                             <div class="step-detail" id="step-evaluator-detail"></div>
                         </div>
                         <div class="pipeline-arrow">→</div>
                         <div class="pipeline-step" id="step-optimizer">
                             <div class="step-icon">🔧</div>
-                            <div class="step-label">Optimizer</div>
+                            <div class="step-label">Оптимизатор</div>
                             <div class="step-detail" id="step-optimizer-detail"></div>
                         </div>
                         <div class="pipeline-arrow">→</div>
@@ -292,6 +292,15 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
+                    <label>Внешний агент (URL)</label>
+                    <select id="external-agent-presets"
+                        onchange="document.getElementById('external-agent-url').value = this.value" class="kb-select"
+                        style="margin-bottom:10px">
+                        <option value="">-- Загрузка... --</option>
+                    </select>
+                    <input type="text" id="external-agent-url" placeholder="https://api.external.ai/v1">
+                </div>
+                <div class="form-group">
                     <label>Имя агента (ID):</label>
                     <input type="text" id="newAgentName" class="prompt-input" placeholder="например: python_expert"
                         style="min-height:unset">
@@ -302,9 +311,14 @@
                         style="min-height:unset">
                 </div>
                 <div class="form-group">
-                    <label>Системная инструкция:</label>
-                    <textarea id="newAgentInstruction" class="prompt-input" rows="4"
-                        placeholder="Вы — эксперт по..."></textarea>
+                    <label for="agent-instructions">Инструкции (System Prompt)</label>
+                    <textarea id="agent-instructions" class="prompt-input" rows="4"
+                        placeholder="Вы — эксперт в..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="agent-kb-file">База знаний (TXT, MD, PDF, JSON)</label>
+                    <input type="file" id="agent-kb-file" accept=".txt,.md,.pdf,.json">
+                    <small>Файлы будут проиндексированы специально для этого агента.</small>
                 </div>
                 <div class="form-group">
                     <label>Типы задач (через запятую):</label>

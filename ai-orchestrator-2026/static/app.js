@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHistory();
     loadChromaStats();
     loadAgents(); // V2
+    loadExternalCatalog();
 
     // Enter key to submit
     document.getElementById('promptInput').addEventListener('keydown', (e) => {
@@ -458,34 +459,93 @@ async function queryKB(nodeId) {
 // HISTORY
 // ============================================================================
 
+async function loadExternalCatalog() {
+    try {
+        const resp = await fetch('/api/external/catalog');
+        const catalog = await resp.json();
+        const select = document.getElementById('external-agent-presets');
+        if (!select) return;
+
+        select.innerHTML = '<option value="">-- Выберите из каталога --</option>';
+        for (const [name, url] of Object.entries(catalog)) {
+            const opt = document.createElement('option');
+            opt.value = url;
+            opt.textContent = name;
+            select.appendChild(opt);
+        }
+    } catch (e) {
+        console.warn('External catalog load error:', e);
+    }
+}
 async function loadHistory() {
     try {
         const resp = await fetch('/api/history');
         const sessions = await resp.json();
 
-        const container = document.getElementById('historyList');
+        state.history = sessions;
+        updateHistoryList();
 
-        if (!sessions || sessions.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">📜</div>
-                    <div class="empty-text">История сессий пуста</div>
-                </div>`;
-            return;
-        }
-
-        container.innerHTML = sessions.map(s => `
-            <div class="history-item slide-in">
-                <div class="history-dot ${s.approved ? 'approved' : 'pending'}"></div>
-                <div class="history-meta">
-                    <div class="history-score">${(s.best_score || 0).toFixed(2)} ${s.approved ? '✓' : '✗'}</div>
-                    <div class="history-request">${s.request || '—'}</div>
-                    <div class="history-time">${formatTime(s.completed_at)} · ${s.versions} версий</div>
-                </div>
-            </div>
-        `).join('');
     } catch (e) {
         console.warn('History load error:', e);
+    }
+}
+
+function updateHistoryList() {
+    const container = document.getElementById('historyList');
+    if (!container) return;
+
+    if (!state.history || state.history.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📜</div>
+                <div class="empty-text">История сессий пуста</div>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = state.history.map(s => `
+        <div class="history-item slide-in" onclick="loadSessionDetail('${s.session_id}')">
+            <div class="history-dot ${s.approved ? 'approved' : 'pending'}"></div>
+            <div class="history-meta">
+                <div class="history-score">${(s.best_score || 0).toFixed(2)} ${s.approved ? '✓' : '✗'}</div>
+                <div class="history-request">${s.request || '—'}</div>
+                <div class="history-time">${formatTime(s.completed_at)} · ${s.versions} версий</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function loadSessionDetail(sessionId) {
+    try {
+        const response = await fetch(`/api/history/${sessionId}`);
+        const versions = await response.json();
+
+        if (versions.length > 0) {
+            // Берем последнюю одобренную или просто последнюю
+            const latest = versions[versions.length - 1];
+            const rollbackResp = await fetch(`/api/rollback/${latest.version_id}`, { method: 'POST' });
+            const rollbackData = await rollbackResp.json();
+
+            if (rollbackData.success) {
+                const fullState = rollbackData.state;
+
+                // Восстанавливаем UI
+                document.getElementById('promptInput').value = fullState.request; // Assuming promptInput is the user request field
+                document.getElementById('resultPrompt').textContent = fullState.final_prompt || ""; // Assuming resultPrompt is the final prompt field
+
+                // Переключаемся на вкладку результатов или главную
+                switchTab('orchestration'); // Or a more appropriate tab
+                alert(`Сессия ${sessionId.substring(0, 8)} загружена. Вы можете продолжить работу.`);
+            } else {
+                console.error("Rollback failed:", rollbackData.message);
+                alert("Не удалось загрузить сессию.");
+            }
+        } else {
+            alert("Нет данных для этой сессии.");
+        }
+    } catch (e) {
+        console.error("Error loading session:", e);
+        alert("Ошибка при загрузке сессии.");
     }
 }
 
@@ -507,31 +567,39 @@ async function loadAgents() {
     try {
         const resp = await fetch('/api/agents');
         const agents = await resp.json();
-        const container = document.getElementById('agentGrid');
 
-        if (!agents || agents.length === 0) {
-            container.innerHTML = `<div class="empty-state">Реестр пуст</div>`;
-            return;
-        }
+        state.agents = agents;
+        updateAgentList();
 
-        const icons = { creative_expert: '🎨', struct_expert: '📐', tone_expert: '🎭', adversary_agent: '🔴' };
-
-        container.innerHTML = agents.map(a => `
-            <div class="agent-card slide-in">
-                <div class="agent-icon" style="background:var(--bg-secondary)">${icons[a.name] || '🤖'}</div>
-                <div class="agent-info">
-                    <div class="agent-name">${a.name}</div>
-                    <div class="agent-desc">${a.role || 'Специализированный агент'}</div>
-                    <div class="agent-stats">
-                        <span class="agent-stat-pill version">v${a.version || 1}</span>
-                        <span class="agent-stat-pill score">${((a.avg_score || 0) * 100).toFixed(0)}% avg</span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
     } catch (e) {
         console.warn('Agents load error:', e);
     }
+}
+
+function updateAgentList() {
+    const container = document.getElementById('agentGrid');
+    if (!container) return;
+
+    if (!state.agents || state.agents.length === 0) {
+        container.innerHTML = `<div class="empty-state">Реестр пуст</div>`;
+        return;
+    }
+
+    const icons = { creative_expert: '🎨', struct_expert: '📐', tone_expert: '🎭', adversary_agent: '🔴' };
+
+    container.innerHTML = state.agents.map(a => `
+        <div class="agent-card slide-in">
+            <div class="agent-icon" style="background:var(--bg-secondary)">${icons[a.name] || '🤖'}</div>
+            <div class="agent-info">
+                <div class="agent-name">${t(a.name)}</div>
+                <div class="agent-desc">${a.role || 'Специализированный агент'}</div>
+                <div class="agent-stats">
+                    <span class="agent-stat-pill version">v${a.version || 1}</span>
+                    <span class="agent-stat-pill score">${((a.avg_score || 0) * 100).toFixed(0)}% avg</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
 function showAddAgentModal() {
@@ -542,32 +610,53 @@ function hideAddAgentModal() {
     document.getElementById('addAgentModal').classList.remove('active');
 }
 
-async function submitNewAgent() {
+async function addAgent() {
     const name = document.getElementById('newAgentName').value.trim();
     const role = document.getElementById('newAgentRole').value.trim();
-    const instruction = document.getElementById('newAgentInstruction').value.trim();
-    const tasks = document.getElementById('newAgentTasks').value.split(',').map(t => t.trim());
+    const instruction = document.getElementById('agent-instructions').value.trim();
+    const kbFile = document.getElementById('agent-kb-file').files[0];
 
     if (!name || !instruction) {
-        alert('Имя и инструкция обязательны');
+        alert("Имя и инструкции обязательны!");
         return;
+    }
+
+    let kbContent = "";
+    if (kbFile) {
+        kbContent = await kbFile.text();
     }
 
     try {
         const resp = await fetch('/api/agents/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, role, system_instruction: instruction, task_types: tasks })
+            body: JSON.stringify({
+                name,
+                role,
+                instruction,
+                kb_content: kbContent,
+                version: 1,
+                task_types: []
+            })
         });
-        const result = await resp.json();
-        if (result.success) {
+        const res = await resp.json();
+        if (res.success) {
             addLog('system', `Агент ${name} добавлен в реестр`);
             hideAddAgentModal();
             loadAgents();
             // Clear form
-            ['newAgentName', 'newAgentRole', 'newAgentInstruction', 'newAgentTasks'].forEach(id => {
-                document.getElementById(id).value = '';
+            ['newAgentName', 'newAgentRole', 'agent-instructions', 'agent-kb-file'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (element.type === 'file') {
+                        element.value = ''; // Clear file input
+                    } else {
+                        element.value = '';
+                    }
+                }
             });
+        } else {
+            addLog('error', `Ошибка добавления агента: ${res.message || 'Неизвестная ошибка'}`);
         }
     } catch (e) {
         addLog('error', `Ошибка добавления агента: ${e.message}`);

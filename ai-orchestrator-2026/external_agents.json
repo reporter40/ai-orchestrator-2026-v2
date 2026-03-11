@@ -1,0 +1,5 @@
+{
+    "GenSpark": "https://api.genspark.ai/agent/v1",
+    "Internal Hive": "http://localhost:8001/api/swarm",
+    "Creative Swarm": "https://swarm.creative-ai.example.com/process"
+}

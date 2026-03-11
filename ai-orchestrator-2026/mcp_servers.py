@@ -275,6 +275,18 @@ class MCPService:
                 documents=[instruction],
                 metadatas=[meta]
             )
+            
+            # Если передан контент для KB — индексируем его
+            kb_content = profile.get('kb_content')
+            if kb_content:
+                await self.add_document(
+                    collection_name="knowledge_base",
+                    doc_id=f"agent_kb_{name}_{datetime.utcnow().timestamp()}",
+                    text=kb_content,
+                    metadata={"agent_id": name, "source": "agent_upload", "node_id": f"kb_{name}"}
+                )
+                logger.info("📚 [MCP] Agent-specific KB indexed for %s", name)
+
             logger.info("💾 [MCP] Agent upserted: %s v%s", name, meta.get('version', '?'))
             return True
         except Exception as e:
@@ -399,7 +411,7 @@ class MCPService:
         logger.info("🌱 [MCP] Registry seeded: %d agents", len(default_agents))
 
     async def query(
-        self, node_id: str, query_text: str = "", n_results: int = 3
+        self, node_id: str, query_text: str = "", n_results: int = 3, agent_id: Optional[str] = None
     ) -> str:
         """
         Поиск релевантной информации в KB.
@@ -429,6 +441,8 @@ class MCPService:
                 # Фильтр по node_id если задан
                 if node_id:
                     kwargs["where"] = {"node_id": node_id}
+                elif agent_id:
+                    kwargs["where"] = {"agent_id": agent_id}
 
                 try:
                     results = self._kb_collection.query(**kwargs)

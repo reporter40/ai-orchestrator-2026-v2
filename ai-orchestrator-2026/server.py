@@ -241,11 +241,15 @@ async def orchestrate(request: Request):
                     })
                     
                     swarm_resp = await _components["connector"].call_external(url, state)
-                    # Если ответ странный — просим транслятор почистить
-                    if not swarm_resp.generated_text or len(swarm_resp.generated_text) < 50:
-                         swarm_resp = await _components["translator"].clean_external_response(str(swarm_resp.model_dump()))
                     
-                    state.prompt_chain.append(swarm_resp.model_dump())
+                    # Snapshotting: сохраняем внешний агент в локальный реестр для стабильности
+                    await _components["mcp"].upsert_agent({
+                        "agent_name": f"external_{url.split('/')[-1]}",
+                        "role": "External Agent",
+                        "instruction": "External agent at " + url,
+                        "external_url": url,
+                        "is_external": True
+                    })
                     drafts_info = [{
                         "agent": "External Agent",
                         "length": len(swarm_resp.generated_text),
@@ -542,6 +546,18 @@ async def add_agent(request: Request):
     mcp = _components["mcp"]
     success = await mcp.upsert_agent(body)
     return JSONResponse({"success": success})
+
+
+@app.get("/api/external/catalog")
+async def get_external_catalog():
+    """Get the catalog of external agent URLs."""
+    catalog_path = Path(__file__).parent / "external_agents.json"
+    if not catalog_path.exists():
+        return JSONResponse({})
+    try:
+        return JSONResponse(json.loads(catalog_path.read_text(encoding="utf-8")))
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 
 @app.get("/api/logs")
