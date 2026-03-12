@@ -1,5 +1,12 @@
 # AI Orchestrator 2026
 
+## Deployment
+- **Server**: 192.168.1.42
+- **Path**: /Users/myversiya/projects/ai-orchestrator-2026
+- **Managed by**: Uvicorn (local server on port 8000)
+- **Status**: Migrated 12.03.2026
+- **Previous**: Antigravity (deprecated, stopped 12.03.2026)
+
 ## Overview
 AI Orchestrator 2026 is a self-improving, multi-agent system designed to optimize and refine prompts through a sophisticated orchestration loop. It utilizes a Mixture of Experts (MoE) architecture, integrated evaluation benchmarks, and an adaptive learning engine.
 

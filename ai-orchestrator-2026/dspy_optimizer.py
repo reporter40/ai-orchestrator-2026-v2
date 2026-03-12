@@ -336,6 +336,37 @@ class PromptOptimizer:
             logger.warning("⚠️  [DSPy] MIPROv2 compile error: %s — используем LLM fallback", e)
             raise
 
+    async def optimize(self, state: ContextState) -> str:
+        """Core optimization logic."""
+        request = state.request
+        last_entry = state.prompt_chain[-1] if state.prompt_chain else {}
+        draft = last_entry.get("generated_text", "")
+        score = state.current_score
+        weakness = self._determine_weakness(state)
+
+        if self._dspy_configured and _DSPY_AVAILABLE:
+            try:
+                trainset = await self._build_trainset(state)
+                student = await self._load_or_compile_program(trainset)
+                
+                result = await asyncio.to_thread(
+                    student,
+                    original_request=request[:300],
+                    previous_draft=draft[:1000],
+                    previous_score=score,
+                    weakness_hint=weakness
+                )
+                return getattr(result, "optimized_prompt", draft)
+            except Exception as e:
+                logger.warning("⚠️ DSPy Opt Error: %s — fallback to LLM", e)
+
+        return await self._llm_optimize(
+            request=request, 
+            draft=draft, 
+            score=score, 
+            weakness_hint=weakness
+        )
+
     async def optimize_prompt(self, state: ContextState, agents: dict = None) -> ContextState:
         """
         V2: Комплексная оптимизация.
